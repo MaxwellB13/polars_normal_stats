@@ -16,12 +16,12 @@ This plugin provides highly optimized implementations of the Normal (Gaussian) d
 
 Install using `uv`:
 ```bash
-uv add git+https://github.com/MaxwellB13/polars_normal_stats.git
+uv add polars-normal-stats
 ```
 
 Install using `pip`:
 ```bash
-pip install git+https://github.com/MaxwellB13/polars_normal_stats.git
+pip install polars-normal-stats
 ```
 
 *(Note: Ensure you have `polars` installed as well.)*
