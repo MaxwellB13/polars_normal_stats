@@ -47,5 +47,7 @@ def run_benchmark():
     for res in results:
         print(f"{res['size']:12,} | {res['normal_cdf']:10.4f} | {res['normal_ppf']:10.4f} | {res['normal_pdf']:10.4f}")
 
+    return results
+
 if __name__ == "__main__":
     run_benchmark()
