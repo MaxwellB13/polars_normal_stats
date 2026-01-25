@@ -10,7 +10,7 @@ This plugin provides highly optimized implementations of the Normal (Gaussian) d
 - **normal_ppf(p, mean=0.0, std=1.0)**: Percent Point Function (Inverse CDF).
 - **normal_pdf(x, mean=0.0, std=1.0)**: Probability Density Function.
 - Fully compatible with Polars' **lazy execution** and expression API.
-- Supports both literal values and Polars expressions for `mean` and `std`.
+- Optimized using Rust `kwargs` for distribution parameters.
 
 ## Installation
 
@@ -56,7 +56,7 @@ Since these functions return Polars expressions, they integrate seamlessly into 
 lazy_result = (
     pl.scan_parquet("data.parquet")
     .with_columns(
-        z_score = normal_cdf(pl.col("value"), mean=pl.col("mean"), std=pl.col("std"))
+        z_score = normal_cdf(pl.col("value"), mean=100.0, std=15.0)
     )
     .collect()
 )
