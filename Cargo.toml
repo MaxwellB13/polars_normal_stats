@@ -1,0 +1,15 @@
+[package]
+name = "polars_normal_stats"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "polars_normal_stats"
+crate-type = ["cdylib"]
+
+[dependencies]
+polars = { version = "0.52", default-features = false }
+pyo3 = { version = "0.26", features = ["extension-module", "abi3-py39"] }
+pyo3-polars = { version = "0.25.0", features = ["derive", "dtype-struct", "dtype-array"] }
+statrs = "0.18"
+serde = { version = "1", features = ["derive"] }
