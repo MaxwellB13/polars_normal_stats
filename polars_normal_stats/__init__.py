@@ -10,7 +10,7 @@ LIB_PATH = Path(__file__).parent
 
 
 def normal_cdf(
-    x: pl.Expr, mean: Union[pl.Expr, float] = 0.0, std: Union[pl.Expr, float] = 1.0
+    x: pl.Expr, mean: float = 0.0, std: float = 1.0
 ) -> pl.Expr:
     """
     Calculate the cumulative distribution function of the normal distribution.
@@ -19,9 +19,9 @@ def normal_cdf(
     ----------
     x : pl.Expr
         The values at which to evaluate the CDF
-    mean : pl.Expr or float, default 0.0
+    mean : float, default 0.0
         The mean of the normal distribution
-    std : pl.Expr or float, default 1.0
+    std : float, default 1.0
         The standard deviation of the normal distribution
 
     Returns
@@ -29,21 +29,27 @@ def normal_cdf(
     pl.Expr
         The CDF values
     """
-    if not isinstance(mean, pl.Expr):
-        mean = pl.lit(mean)
-    if not isinstance(std, pl.Expr):
-        std = pl.lit(std)
+    try:
+        mean_val = float(mean)
+        std_val = float(std)
+    except (TypeError, ValueError):
+        # Handle cases where expressions or None are passed to maintain compatibility
+        # with previous behavior that expected these to fail in Rust with a specific message.
+        raise pl.exceptions.ComputeError(
+            "mean and std must be a scalar value, not a column or null."
+        ) from None
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
         function_name="normal_cdf",
-        args=[x.cast(pl.Float64), mean, std],
+        args=[x.cast(pl.Float64)],
+        kwargs={"mean": mean_val, "std": std_val},
         is_elementwise=True,
     )
 
 
 def normal_ppf(
-    p: pl.Expr, mean: Union[pl.Expr, float] = 0.0, std: Union[pl.Expr, float] = 1.0
+    p: pl.Expr, mean: float = 0.0, std: float = 1.0
 ) -> pl.Expr:
     """
     Calculate the percent point function (inverse CDF) of the normal distribution.
@@ -52,9 +58,9 @@ def normal_ppf(
     ----------
     p : pl.Expr
         The probability values (must be between 0 and 1)
-    mean : pl.Expr or float, default 0.0
+    mean : float, default 0.0
         The mean of the normal distribution
-    std : pl.Expr or float, default 1.0
+    std : float, default 1.0
         The standard deviation of the normal distribution
 
     Returns
@@ -62,21 +68,25 @@ def normal_ppf(
     pl.Expr
         The PPF values
     """
-    if not isinstance(mean, pl.Expr):
-        mean = pl.lit(mean)
-    if not isinstance(std, pl.Expr):
-        std = pl.lit(std)
+    try:
+        mean_val = float(mean)
+        std_val = float(std)
+    except (TypeError, ValueError):
+        raise pl.exceptions.ComputeError(
+            "mean and std must be a scalar value, not a column or null."
+        ) from None
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
         function_name="normal_ppf",
-        args=[p.cast(pl.Float64), mean, std],
+        args=[p.cast(pl.Float64)],
+        kwargs={"mean": mean_val, "std": std_val},
         is_elementwise=True,
     )
 
 
 def normal_pdf(
-    x: pl.Expr, mean: Union[pl.Expr, float] = 0.0, std: Union[pl.Expr, float] = 1.0
+    x: pl.Expr, mean: float = 0.0, std: float = 1.0
 ) -> pl.Expr:
     """
     Calculate the probability density function of the normal distribution.
@@ -85,9 +95,9 @@ def normal_pdf(
     ----------
     x : pl.Expr
         The values at which to evaluate the PDF
-    mean : pl.Expr or float, default 0.0
+    mean : float, default 0.0
         The mean of the normal distribution
-    std : pl.Expr or float, default 1.0
+    std : float, default 1.0
         The standard deviation of the normal distribution
 
     Returns
@@ -95,14 +105,18 @@ def normal_pdf(
     pl.Expr
         The PDF values
     """
-    if not isinstance(mean, pl.Expr):
-        mean = pl.lit(mean)
-    if not isinstance(std, pl.Expr):
-        std = pl.lit(std)
+    try:
+        mean_val = float(mean)
+        std_val = float(std)
+    except (TypeError, ValueError):
+        raise pl.exceptions.ComputeError(
+            "mean and std must be a scalar value, not a column or null."
+        ) from None
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
         function_name="normal_pdf",
-        args=[x.cast(pl.Float64), mean, std],
+        args=[x.cast(pl.Float64)],
+        kwargs={"mean": mean_val, "std": std_val},
         is_elementwise=True,
     )
