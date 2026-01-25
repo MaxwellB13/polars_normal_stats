@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 import polars as pl
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["normal_cdf", "normal_ppf", "normal_pdf"]
 
 # Find the compiled library
