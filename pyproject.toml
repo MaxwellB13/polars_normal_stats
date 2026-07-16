@@ -45,6 +45,17 @@ module-name = "polars_normal_stats._internal"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Formatted benchmark table output is clearer unwrapped.
+"benchmarks/*" = ["E501"]
+
 #[[tool.uv.index]]
 #name = "testpypi"
 #url = "https://test.pypi.org/simple/"
