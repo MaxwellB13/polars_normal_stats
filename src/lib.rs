@@ -11,7 +11,10 @@ struct NormalKwargs {
 }
 
 fn create_normal(mean: f64, std: f64) -> PolarsResult<Normal> {
-    if std <= 0.0 {
+    if mean.is_nan() {
+        return Err(PolarsError::ComputeError("Mean must not be NaN.".into()));
+    }
+    if std.is_nan() || std <= 0.0 {
         return Err(PolarsError::ComputeError(
             format!("Standard deviation must be positive. Got: {}", std).into(),
         ));
@@ -36,7 +39,9 @@ fn normal_ppf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
 
     let out = ca.apply(|opt_p| {
         opt_p.and_then(|p| {
-            if (0.0..=1.0).contains(&p) {
+            if p.is_nan() {
+                Some(f64::NAN)
+            } else if (0.0..=1.0).contains(&p) {
                 Some(normal.inverse_cdf(p))
             } else {
                 None
