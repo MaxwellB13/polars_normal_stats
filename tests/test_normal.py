@@ -1,8 +1,9 @@
-import pytest
+import math
 
 import polars as pl
-import math
-from polars_normal_stats import normal_cdf, normal_ppf, normal_pdf
+import pytest
+
+from polars_normal_stats import normal_cdf, normal_pdf, normal_ppf
 
 
 def test_normal_cdf():

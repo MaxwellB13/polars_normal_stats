@@ -1,8 +1,11 @@
-import polars as pl
-import numpy as np
 import time
+
+import numpy as np
+import polars as pl
 from scipy.stats import norm
-from polars_normal_stats import normal_cdf, normal_ppf, normal_pdf
+
+from polars_normal_stats import normal_cdf, normal_pdf, normal_ppf
+
 
 def benchmark_comparison(iterations=10):
     sizes = [100_000, 1_000_000, 10_000_000, 25_000_000]
@@ -98,7 +101,7 @@ def save_as_markdown(results):
     
     with open(file_path, "w") as f:
         f.write("# Benchmark Comparison: SciPy vs Polars Plugin\n\n")
-        f.write(f"Results averaged over 10 iterations.\n\n")
+        f.write("Results averaged over 10 iterations.\n\n")
         f.write("| Function | Size | SciPy (s) | Plugin (s) | Speedup |\n")
         f.write("| :--- | ---: | ---: | ---: | ---: |\n")
         for row in results:
