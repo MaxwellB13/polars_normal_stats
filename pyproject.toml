@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "polars-normal-stats"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fast normal distribution functions (CDF, PPF, PDF) for Polars DataFrames using Rust"
 readme = "README.md"
 authors = [
@@ -33,7 +33,9 @@ dependencies = [
 [dependency-groups]
 dev = [
     "maturin>=1.11.5",
+    "numpy>=2.2.6",
     "pytest>=9.0.2",
+    "scipy>=1.15.3",
 ]
 
 [tool.maturin]
@@ -43,8 +45,19 @@ module-name = "polars_normal_stats._internal"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 
-[[tool.uv.index]]
-name = "testpypi"
-url = "https://test.pypi.org/simple/"
-publish-url = "https://test.pypi.org/legacy/"
-explicit = true
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Formatted benchmark table output is clearer unwrapped.
+"benchmarks/*" = ["E501"]
+
+#[[tool.uv.index]]
+#name = "testpypi"
+#url = "https://test.pypi.org/simple/"
+#publish-url = "https://test.pypi.org/legacy/"
+#explicit = true

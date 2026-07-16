@@ -1,7 +1,10 @@
-import polars as pl
 import time
-from polars_normal_stats import normal_cdf, normal_ppf, normal_pdf
+
 import numpy as np
+import polars as pl
+
+from polars_normal_stats import normal_cdf, normal_pdf, normal_ppf
+
 
 def run_benchmark():
     sizes = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]

@@ -1,12 +1,28 @@
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Union
+
 import polars as pl
 
-__version__ = "0.2.0"
+try:
+    __version__ = version("polars-normal-stats")
+except PackageNotFoundError:
+    __version__ = "unknown"
+
 __all__ = ["normal_cdf", "normal_ppf", "normal_pdf"]
 
 # Find the compiled library
 LIB_PATH = Path(__file__).parent
+
+
+def _validate_scalar_params(mean: float, std: float) -> tuple[float, float]:
+    try:
+        return float(mean), float(std)
+    except (TypeError, ValueError):
+        # Handle cases where expressions or None are passed to maintain compatibility
+        # with previous behavior that expected these to fail in Rust with a specific message.
+        raise pl.exceptions.ComputeError(
+            "mean and std must be a scalar value, not a column or null."
+        ) from None
 
 
 def normal_cdf(
@@ -29,15 +45,7 @@ def normal_cdf(
     pl.Expr
         The CDF values
     """
-    try:
-        mean_val = float(mean)
-        std_val = float(std)
-    except (TypeError, ValueError):
-        # Handle cases where expressions or None are passed to maintain compatibility
-        # with previous behavior that expected these to fail in Rust with a specific message.
-        raise pl.exceptions.ComputeError(
-            "mean and std must be a scalar value, not a column or null."
-        ) from None
+    mean_val, std_val = _validate_scalar_params(mean, std)
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
@@ -68,13 +76,7 @@ def normal_ppf(
     pl.Expr
         The PPF values
     """
-    try:
-        mean_val = float(mean)
-        std_val = float(std)
-    except (TypeError, ValueError):
-        raise pl.exceptions.ComputeError(
-            "mean and std must be a scalar value, not a column or null."
-        ) from None
+    mean_val, std_val = _validate_scalar_params(mean, std)
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
@@ -105,13 +107,7 @@ def normal_pdf(
     pl.Expr
         The PDF values
     """
-    try:
-        mean_val = float(mean)
-        std_val = float(std)
-    except (TypeError, ValueError):
-        raise pl.exceptions.ComputeError(
-            "mean and std must be a scalar value, not a column or null."
-        ) from None
+    mean_val, std_val = _validate_scalar_params(mean, std)
 
     return pl.plugins.register_plugin_function(
         plugin_path=LIB_PATH,
