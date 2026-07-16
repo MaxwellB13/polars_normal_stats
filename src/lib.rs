@@ -23,10 +23,18 @@ fn create_normal(mean: f64, std: f64) -> PolarsResult<Normal> {
         .map_err(|e| PolarsError::ComputeError(format!("Invalid normal distribution: {}", e).into()))
 }
 
-#[polars_expr(output_type=Float64)]
-fn normal_cdf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
+fn extract_ca_and_normal<'a>(
+    inputs: &'a [Series],
+    kwargs: &NormalKwargs,
+) -> PolarsResult<(&'a Float64Chunked, Normal)> {
     let ca = inputs[0].f64()?;
     let normal = create_normal(kwargs.mean, kwargs.std)?;
+    Ok((ca, normal))
+}
+
+#[polars_expr(output_type=Float64)]
+fn normal_cdf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
+    let (ca, normal) = extract_ca_and_normal(inputs, &kwargs)?;
 
     let out = ca.apply_values(|x| normal.cdf(x));
     Ok(out.into_series())
@@ -34,8 +42,7 @@ fn normal_cdf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
 
 #[polars_expr(output_type=Float64)]
 fn normal_ppf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
-    let ca = inputs[0].f64()?;
-    let normal = create_normal(kwargs.mean, kwargs.std)?;
+    let (ca, normal) = extract_ca_and_normal(inputs, &kwargs)?;
 
     let out = ca.apply(|opt_p| {
         opt_p.and_then(|p| {
@@ -54,8 +61,7 @@ fn normal_ppf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
 
 #[polars_expr(output_type=Float64)]
 fn normal_pdf(inputs: &[Series], kwargs: NormalKwargs) -> PolarsResult<Series> {
-    let ca = inputs[0].f64()?;
-    let normal = create_normal(kwargs.mean, kwargs.std)?;
+    let (ca, normal) = extract_ca_and_normal(inputs, &kwargs)?;
 
     let out = ca.apply_values(|x| normal.pdf(x));
     Ok(out.into_series())
